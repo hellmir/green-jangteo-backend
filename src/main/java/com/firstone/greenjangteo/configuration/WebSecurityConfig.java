@@ -46,6 +46,7 @@ public class WebSecurityConfig extends GlobalMethodSecurityConfiguration {
                 .antMatchers(HttpMethod.GET, "/users/{userId}").permitAll()
                 .antMatchers(HttpMethod.GET, "/products/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/reviews/products/{productId}").permitAll()
+                .antMatchers(HttpMethod.GET, "/cron/**").permitAll() // CRON_SECRET은 컨트롤러에서 검증
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter

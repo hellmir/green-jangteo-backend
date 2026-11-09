@@ -10,7 +10,9 @@ import com.firstone.greenjangteo.user.model.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionException;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -44,6 +46,7 @@ public class CouponServiceImpl implements CouponService {
     private static final Logger log = LoggerFactory.getLogger(CouponService.class);
 
     private static final String QUANTITY_SHORTAGE_MESSAGE = "couponsRemained: {} is less than requiredQuantity: {}";
+    private static final String JOB_NOT_COMPLETED_MESSAGE = "Job did not complete: %s, status: %s";
 
     @Override
     public void createCoupons(IssueCouponsRequestDto issueCouponsRequestDto) throws JobExecutionException {
@@ -65,7 +68,7 @@ public class CouponServiceImpl implements CouponService {
                 .addLong("time", System.currentTimeMillis())
                 .toJobParameters();
 
-        jobLauncher.run(createCouponJob, jobParameters);
+        runJob(createCouponJob, jobParameters);
     }
 
     @Override
@@ -73,7 +76,7 @@ public class CouponServiceImpl implements CouponService {
         JobParameters jobParameters = new JobParametersBuilder()
                 .addLong("time", System.currentTimeMillis())
                 .toJobParameters();
-        jobLauncher.run(issueCouponJob, jobParameters);
+        runJob(issueCouponJob, jobParameters);
     }
 
     @Override
@@ -88,7 +91,7 @@ public class CouponServiceImpl implements CouponService {
                 .addLong("time", System.currentTimeMillis())
                 .toJobParameters();
 
-        jobLauncher.run(provideCouponJob, jobParameters);
+        runJob(provideCouponJob, jobParameters);
     }
 
     @Override
@@ -96,7 +99,7 @@ public class CouponServiceImpl implements CouponService {
         JobParameters jobParameters = new JobParametersBuilder()
                 .addLong("time", System.currentTimeMillis())
                 .toJobParameters();
-        jobLauncher.run(deleteExpiredCouponJob, jobParameters);
+        runJob(deleteExpiredCouponJob, jobParameters);
     }
 
     @Override
@@ -174,5 +177,15 @@ public class CouponServiceImpl implements CouponService {
     private Coupon getCoupon(long couponId) {
         return couponRepository.findById(couponId)
                 .orElseThrow(() -> new EntityNotFoundException(COUPON_ID_NOT_FOUND_EXCEPTION + couponId));
+    }
+
+    private void runJob(Job job, JobParameters jobParameters) throws JobExecutionException {
+        JobExecution jobExecution = jobLauncher.run(job, jobParameters);
+
+        if (jobExecution.getStatus() != BatchStatus.COMPLETED) {
+            throw new JobExecutionException(
+                    String.format(JOB_NOT_COMPLETED_MESSAGE, job.getName(), jobExecution.getStatus())
+            );
+        }
     }
 }

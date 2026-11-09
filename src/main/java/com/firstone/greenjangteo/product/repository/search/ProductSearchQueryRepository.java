@@ -2,6 +2,7 @@ package com.firstone.greenjangteo.product.repository.search;
 
 import com.firstone.greenjangteo.product.domain.document.ProductDocument;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
+@Profile("es")
 @Repository
 @RequiredArgsConstructor
 public class ProductSearchQueryRepository {

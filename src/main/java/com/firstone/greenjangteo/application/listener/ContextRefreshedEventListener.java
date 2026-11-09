@@ -10,11 +10,13 @@ import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
 
 import java.util.Date;
 import java.util.Set;
 
+@Profile("!vercel") // 인스턴스가 동시에 뜨는 환경에서는 다른 인스턴스의 실행 중인 잡까지 중단 처리하게 된다
 @Configuration
 @RequiredArgsConstructor
 public class ContextRefreshedEventListener implements ApplicationListener<ContextRefreshedEvent> {

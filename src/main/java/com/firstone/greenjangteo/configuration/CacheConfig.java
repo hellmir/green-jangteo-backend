@@ -7,16 +7,16 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.firstone.greenjangteo.hibernate.HibernateCollectionMixIn;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.interceptor.CacheErrorHandler;
+import org.springframework.cache.interceptor.LoggingCacheErrorHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -29,15 +29,8 @@ import static org.springframework.data.redis.cache.RedisCacheConfiguration.defau
 @Configuration
 @EnableCaching
 @RequiredArgsConstructor
-public class CacheConfig {
-    @Value("${spring.redis.host}")
-    private String host;
-
-    @Value("${spring.redis.port}")
-    private int port;
-
-    @Value("${spring.redis.password}")
-    private String password;
+public class CacheConfig extends CachingConfigurerSupport {
+    private static final String CACHE_KEY_PREFIX = "green-jangteo:";
 
     private ObjectMapper objectMapper() {
         ObjectMapper mapper = new ObjectMapper();
@@ -54,6 +47,11 @@ public class CacheConfig {
     }
 
 
+    @Override
+    public CacheErrorHandler errorHandler() {
+        return new LoggingCacheErrorHandler();
+    }
+
     @Bean
     public CacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
         RedisCacheConfiguration redisCacheConfiguration = defaultCacheConfig()
@@ -61,21 +59,12 @@ public class CacheConfig {
                         .SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext
                         .SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer(objectMapper())))
-                .entryTtl(defaultCacheConfig().entryTtl(Duration.ofMinutes(30)).getTtl());
+                .entryTtl(defaultCacheConfig().entryTtl(Duration.ofMinutes(30)).getTtl())
+                .prefixCacheNameWith(CACHE_KEY_PREFIX);
 
         return RedisCacheManager.RedisCacheManagerBuilder
                 .fromConnectionFactory(redisConnectionFactory)
                 .cacheDefaults(redisCacheConfiguration)
                 .build();
-    }
-
-    @Bean
-    public RedisConnectionFactory redisConnectionFactory() {
-        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-        redisStandaloneConfiguration.setHostName(host);
-        redisStandaloneConfiguration.setPort(port);
-        redisStandaloneConfiguration.setPassword(password);
-
-        return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }
 }

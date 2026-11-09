@@ -15,7 +15,6 @@ import static com.firstone.greenjangteo.coupon.exception.message.AbnormalStateEx
 import static com.firstone.greenjangteo.coupon.testutil.CouponTestConstant.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 import static org.mockito.Mockito.mock;
 
 class CouponTest {
@@ -99,13 +98,13 @@ class CouponTest {
         }
 
         // then
-        LocalDateTime issuedAt = coupons.get(0).getIssuedAt();
         long expirationPeriod = Long.parseLong(EXPIRATION_PERIOD1);
-        LocalDateTime expiredAt = issuedAt.plusDays(expirationPeriod);
 
         assertThat(coupons).hasSize(requiredQuantity)
-                .extracting("user", "expiredAt")
-                .containsOnly(tuple(user, expiredAt));
+                .allSatisfy(coupon -> {
+                    assertThat(coupon.getUser()).isEqualTo(user);
+                    assertThat(coupon.getExpiredAt()).isEqualTo(coupon.getIssuedAt().plusDays(expirationPeriod));
+                });
     }
 
     @DisplayName("회원이 비어 있지 않은 상태에서 쿠폰을 지급하려 하면 AlreadyProvidedCouponException이 발생한다.")

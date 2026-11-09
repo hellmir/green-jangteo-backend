@@ -6,11 +6,13 @@ import com.firstone.greenjangteo.product.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.stream.IntStream;
 
+@Profile("!vercel") // 콜드 스타트마다 실행되면 DB 왕복이 생기므로 Vercel에서는 스키마 생성 때 1회만 넣는다
 @Component
 @Transactional
 @RequiredArgsConstructor
@@ -19,6 +21,10 @@ public class CategoryDummy implements ApplicationRunner {
     private final CategoryRepository categoryRepository;
     @Override
     public void run(ApplicationArguments args) {
+        if (categoryRepository.count() > 0) {
+            return;
+        }
+
         String[] categoriesLevel1 = {
                 "전자제품",
                 "의류",

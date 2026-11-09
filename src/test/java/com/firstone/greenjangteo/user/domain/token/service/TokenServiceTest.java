@@ -7,8 +7,11 @@ import com.firstone.greenjangteo.user.security.JwtTokenProvider;
 import com.firstone.greenjangteo.user.testutil.UserTestObjectFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -113,6 +116,21 @@ class TokenServiceTest {
         // when, then
         assertThatThrownBy(() -> tokenService.issueNewAccessToken(refreshTokenValue))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(INVALID_TOKEN_EXCEPTION_MESSAGE + refreshTokenValue);
+                .hasMessage(INVALID_TOKEN_EXCEPTION_MESSAGE);
+    }
+
+    @DisplayName("리프레시 토큰 값은 로그에 남기지 않는다.")
+    @Test
+    @ExtendWith(OutputCaptureExtension.class)
+    void doesNotLogRefreshTokenValue(CapturedOutput output) {
+        // given
+        String refreshTokenValue = "refresh-token-value-to-hide";
+
+        // when
+        assertThatThrownBy(() -> tokenService.issueNewAccessToken(refreshTokenValue))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        // then
+        assertThat(output.getOut()).doesNotContain(refreshTokenValue);
     }
 }

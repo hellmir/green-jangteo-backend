@@ -1,0 +1,29 @@
+# Vercel 컨테이너 Function 전용 설정
+# 인스턴스가 요청이 올 때만 뜨고 약 35초 뒤 내려가므로 기동 시간과 DB 왕복을 줄인다
+server:
+  forward-headers-strategy: framework
+
+spring:
+  main:
+    lazy-initialization: true
+    banner-mode: off
+  datasource:
+    hikari:
+      maximum-pool-size: 3
+      minimum-idle: 1
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
+        jdbc:
+          use_get_generated_keys: true # 메타데이터 조회를 끄면 기본값이 false가 되어 INSERT마다 왕복이 1번 는다
+  redis:
+    timeout: 3s
+    connect-timeout: 3s
+  batch:
+    jdbc:
+      initialize-schema: never

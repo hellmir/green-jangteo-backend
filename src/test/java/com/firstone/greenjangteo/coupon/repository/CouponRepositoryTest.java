@@ -92,7 +92,7 @@ class CouponRepositoryTest {
         couponRepository.saveAll(createdCoupons2);
 
         // when
-        List<Coupon> coupons = couponRepository.findAllByUserId(1L);
+        List<Coupon> coupons = couponRepository.findAllByUserId(user.getId());
 
         // then
         assertThat(coupons).hasSize(createdCoupons2.size())

@@ -28,6 +28,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
+    private static final String CRON_PATH_PREFIX = "/cron/";
+
+    /**
+     * Vercel Cron은 Authorization 헤더에 JWT가 아닌 CRON_SECRET을 담아 호출한다.
+     */
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return request.getRequestURI().startsWith(CRON_PATH_PREFIX);
+    }
+
     @Override
     protected void doFilterInternal
             (HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "regions": ["sin1"],
+  "services": {
+    "api": { "root": ".", "runtime": "container", "entrypoint": "vercel.Dockerfile" }
+  },
+  "rewrites": [
+    {
+      "source": "/(carts|categories|category|comments|coupon-groups|coupons|cron|orders|posts|product|productDocuments|products|reserves|reviews|stores|token|users)(/.*)?",
+      "destination": { "service": "api" }
+    },
+    { "source": "/v2/api-docs(.*)", "destination": { "service": "api" } },
+    { "source": "/swagger-resources(.*)", "destination": { "service": "api" } },
+    { "source": "/swagger-ui/(.*)", "destination": { "service": "api" } }
+  ],
+  "crons": [
+    { "path": "/cron/coupons/issue", "schedule": "0 0 * * *" },
+    { "path": "/cron/coupons/delete-expired", "schedule": "0 6 * * *" }
+  ]
+}

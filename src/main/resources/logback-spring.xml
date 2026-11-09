@@ -10,41 +10,50 @@
         </layout>
     </appender>
 
-    <!--file appender-->
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOGS_PATH}/log_file.log</file>
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative][%thread] %-5level %logger{35} - %msg%n</pattern>
-            <charset>UTF-8</charset>
-        </encoder>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOGS_PATH}/%d{yyyy-MM-dd}_%i.log</fileNamePattern>
-            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>10MB</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
-            <maxHistory>60</maxHistory>
-        </rollingPolicy>
-    </appender>
+    <!-- Vercel은 표준 출력만 수집하고 인스턴스 파일 시스템은 유지되지 않으므로 파일 appender를 만들지 않는다 -->
+    <springProfile name="vercel">
+        <root level="${LOGS_LEVEL}">
+            <appender-ref ref="STDOUT"/>
+        </root>
+    </springProfile>
 
-    <!-- error appender-->
-    <appender name="Error" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOGS_PATH}/error_file.log</file>
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative][%thread] %-5level %logger{35} - %msg%n</pattern>
-            <charset>UTF-8</charset>
-        </encoder>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOGS_PATH}/%d{yyyy-MM-dd}_error.log</fileNamePattern>
-            <maxHistory>30</maxHistory>
-        </rollingPolicy>
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>ERROR</level>
-        </filter>
-    </appender>
+    <springProfile name="!vercel">
+        <!--file appender-->
+        <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOGS_PATH}/log_file.log</file>
+            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+                <pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative][%thread] %-5level %logger{35} - %msg%n</pattern>
+                <charset>UTF-8</charset>
+            </encoder>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${LOGS_PATH}/%d{yyyy-MM-dd}_%i.log</fileNamePattern>
+                <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                    <maxFileSize>10MB</maxFileSize>
+                </timeBasedFileNamingAndTriggeringPolicy>
+                <maxHistory>60</maxHistory>
+            </rollingPolicy>
+        </appender>
 
-    <root level="${LOGS_LEVEL}">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="FILE"/>
-        <appender-ref ref="Error"/>
-    </root>
+        <!-- error appender-->
+        <appender name="Error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOGS_PATH}/error_file.log</file>
+            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+                <pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative][%thread] %-5level %logger{35} - %msg%n</pattern>
+                <charset>UTF-8</charset>
+            </encoder>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${LOGS_PATH}/%d{yyyy-MM-dd}_error.log</fileNamePattern>
+                <maxHistory>30</maxHistory>
+            </rollingPolicy>
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                <level>ERROR</level>
+            </filter>
+        </appender>
+
+        <root level="${LOGS_LEVEL}">
+            <appender-ref ref="STDOUT"/>
+            <appender-ref ref="FILE"/>
+            <appender-ref ref="Error"/>
+        </root>
+    </springProfile>
 </configuration>

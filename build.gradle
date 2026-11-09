@@ -42,7 +42,7 @@ dependencies {
     implementation 'io.springfox:springfox-swagger-ui:3.0.0'
 
     // data
-    runtimeOnly 'com.mysql:mysql-connector-j:8.0.32'
+    runtimeOnly 'org.postgresql:postgresql:42.7.14'
     testImplementation 'com.h2database:h2:2.1.214'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.7.12'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis:2.7.12'
@@ -72,6 +72,7 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    maxHeapSize = '2g'
 }
 
 task printProjectName {

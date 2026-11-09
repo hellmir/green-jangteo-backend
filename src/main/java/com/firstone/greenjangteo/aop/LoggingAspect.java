@@ -19,8 +19,10 @@ import static com.firstone.greenjangteo.aop.LogConstant.PERFORMANCE_MEASUREMENT;
 public class LoggingAspect {
     private static final Logger log = LoggerFactory.getLogger(LoggingAspect.class);
 
+    // TokenService의 첫 번째 인수는 리프레시 토큰 값이므로 로그 대상에서 제외한다
     private static final String STRING_VALUE_POINTCUT
-            = "execution(* com.firstone.greenjangteo..service.*.*(..)) && args(stringValue, ..)";
+            = "execution(* com.firstone.greenjangteo..service.*.*(..)) && args(stringValue, ..)"
+            + " && !within(com.firstone.greenjangteo.user.domain.token.service.TokenService)";
 
     private static final String LONG_VALUE_POINTCUT
             = "execution(* com.firstone.greenjangteo..service.*.*(..)) && args(longValue, ..)";

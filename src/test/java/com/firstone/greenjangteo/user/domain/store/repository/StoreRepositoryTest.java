@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.firstone.greenjangteo.user.domain.store.testutil.StoreTestConstant.STORE_NAME1;
 import static com.firstone.greenjangteo.user.domain.store.testutil.StoreTestConstant.STORE_NAME2;
@@ -15,6 +16,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @ActiveProfiles("test")
 @SpringBootTest
+@Transactional
 class StoreRepositoryTest {
     @Autowired
     private StoreRepository storeRepository;

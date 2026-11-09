@@ -8,8 +8,8 @@ import com.firstone.greenjangteo.user.domain.store.model.entity.Store;
 import java.time.LocalDateTime;
 
 public class StoreTestObjectFactory {
-    private static final String CATEGORY_NAME = "가전제품";
-    private static final int CATEGORY_LEVEL = 1;
+    private static final String FIRST_CATEGORY = "가전제품";
+    private static final String SECOND_CATEGORY = "주방가전";
 
     public static Store createStore(Long sellerId, String storeName, String description, String imageUrl) {
         Store store = Store.of(sellerId, storeName);
@@ -33,11 +33,10 @@ public class StoreTestObjectFactory {
                 .build();
     }
 
-    public static Category createCategory(Product product) {
+    public static Category createCategory() {
         return Category.builder()
-                .product(product)
-                .categoryName(CATEGORY_NAME)
-                .level(CATEGORY_LEVEL)
+                .firstCategory(FIRST_CATEGORY)
+                .secondCategory(SECOND_CATEGORY)
                 .build();
     }
 }

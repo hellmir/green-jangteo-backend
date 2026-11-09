@@ -664,7 +664,7 @@ class AuthenticationServiceTest {
     private void createProductsAndCategory(Store store) {
         Product product1 = StoreTestObjectFactory.createProduct(store, PRODUCT_NAME1, PRICE1, INVENTORY1);
         Product product2 = StoreTestObjectFactory.createProduct(store, PRODUCT_NAME2, PRICE2, INVENTORY2);
-        Category category = StoreTestObjectFactory.createCategory(product1);
+        Category category = StoreTestObjectFactory.createCategory();
         productRepository.saveAll(List.of(product1, product2));
         categoryRepository.save(category);
 
